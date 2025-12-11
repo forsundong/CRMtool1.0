@@ -23,7 +23,6 @@ export const LevelCreator: React.FC<LevelCreatorProps> = ({ config }) => {
     difficulty: 1,
     questionIds: '', // string input for multiple IDs
     description: '',
-    batchCount: 1,
   });
 
   const addLog = (msg: string) => {
@@ -55,10 +54,10 @@ export const LevelCreator: React.FC<LevelCreatorProps> = ({ config }) => {
         throw new Error("无效的题目ID");
       }
 
-      addLog(`开始任务: 创建 ${formData.batchCount} 个关卡，每个绑定 ${qIds.length} 个题目`);
+      addLog(`开始任务: 为 ${qIds.length} 个试题ID分别创建关卡`);
 
-      // Construct Base Payload
-      const basePayload: CreateLevelPayload = {
+      // Construct Base Payload (without questionIdList)
+      const basePayload: Omit<CreateLevelPayload, 'questionIdList'> = {
         subjectId: 14,
         writeCheckpointType: formData.writeCheckpointType,
         name: formData.name,
@@ -73,7 +72,6 @@ export const LevelCreator: React.FC<LevelCreatorProps> = ({ config }) => {
         number: 1,
         passMaxNum: formData.passMaxNum,
         passType: formData.passType,
-        questionIdList: qIds,
         reachRightNum: 2,
         targetRightNum: 6,
         upGradeStarBaseNum: 1,
@@ -83,35 +81,41 @@ export const LevelCreator: React.FC<LevelCreatorProps> = ({ config }) => {
 
       let successCount = 0;
 
-      for (let i = 0; i < formData.batchCount; i++) {
-        // If creating multiple, append index to name to avoid duplicates if needed
-        const currentName = formData.batchCount > 1 
-          ? `${formData.name}_${i + 1}` 
+      // 为每个试题ID创建单独的关卡
+      for (let i = 0; i < qIds.length; i++) {
+        // 关卡名称：如果有多个ID，添加序号后缀
+        const currentName = qIds.length > 1
+          ? `${formData.name}_${i + 1}`
           : formData.name;
 
-        const payload = { ...basePayload, name: currentName };
+        // 为每个关卡创建一个包含单个试题ID的 payload
+        const payload: CreateLevelPayload = {
+          ...basePayload,
+          name: currentName,
+          questionIdList: [qIds[i]] // 每个关卡只绑定一个试题ID
+        };
 
         try {
           const res = await CrmService.createLevel(payload, config);
           // API returns boolean true on success in data field
           if (res.code === 200 && res.data === true) {
             successCount++;
-            addLog(`✅ (${i+1}/${formData.batchCount}) 关卡 "${currentName}" 创建成功`);
+            addLog(`✅ (${i+1}/${qIds.length}) 关卡 "${currentName}" 创建成功 (绑定试题ID: ${qIds[i]})`);
           } else {
-            addLog(`❌ (${i+1}/${formData.batchCount}) 关卡 "${currentName}" 失败: ${res.message}`);
+            addLog(`❌ (${i+1}/${qIds.length}) 关卡 "${currentName}" 失败: ${res.message}`);
           }
         } catch (err: any) {
-           addLog(`❌ (${i+1}/${formData.batchCount}) 请求异常: ${err.message}`);
+           addLog(`❌ (${i+1}/${qIds.length}) 请求异常: ${err.message}`);
         }
-        
+
         // Small delay to be safe
-        if (i < formData.batchCount - 1) await new Promise(r => setTimeout(r, 200));
+        if (i < qIds.length - 1) await new Promise(r => setTimeout(r, 200));
       }
 
-      if (successCount === formData.batchCount) {
+      if (successCount === qIds.length) {
         addLog(`🎉 全部完成！成功创建 ${successCount} 个关卡。`);
       } else {
-        addLog(`⚠️ 完成，但有部分失败。成功: ${successCount}, 失败: ${formData.batchCount - successCount}`);
+        addLog(`⚠️ 完成，但有部分失败。成功: ${successCount}, 失败: ${qIds.length - successCount}`);
       }
       
     } catch (err: any) {
@@ -126,7 +130,7 @@ export const LevelCreator: React.FC<LevelCreatorProps> = ({ config }) => {
        <div className="flex justify-between items-end border-b border-slate-200 pb-4">
         <div>
           <h2 className="text-2xl font-bold text-slate-900">快速创建关卡</h2>
-          <p className="text-slate-500 mt-1 text-sm">输入关卡基本信息及试题ID，快速创建关卡并完成绑定。</p>
+          <p className="text-slate-500 mt-1 text-sm">输入关卡基本信息及试题ID，将为每个试题ID创建单独的关卡。</p>
         </div>
         {!config.authToken && (
           <div className="flex items-center gap-2 text-xs text-amber-600 bg-amber-50 px-3 py-1.5 rounded-md border border-amber-100">
@@ -210,16 +214,6 @@ export const LevelCreator: React.FC<LevelCreatorProps> = ({ config }) => {
                             onChange={(e) => setFormData({ ...formData, difficulty: parseInt(e.target.value) })}
                             required
                         />
-                         <Input
-                            label="批量生成个数"
-                            type="number"
-                            min="1"
-                            max="50"
-                            value={formData.batchCount}
-                            onChange={(e) => setFormData({ ...formData, batchCount: parseInt(e.target.value) || 1 })}
-                            required
-                            helperText="将循环创建指定数量的相同关卡"
-                        />
                     </div>
 
                     <div>
@@ -236,7 +230,7 @@ export const LevelCreator: React.FC<LevelCreatorProps> = ({ config }) => {
                             />
                             <p className="text-xs text-slate-500 mt-1 flex items-center gap-1">
                                 <HelpCircle size={12} />
-                                按 ID 绑定顺序出题
+                                输入多个试题ID，每个ID将创建一个独立的关卡
                             </p>
                         </div>
                     </div>
@@ -261,7 +255,7 @@ export const LevelCreator: React.FC<LevelCreatorProps> = ({ config }) => {
                                     ...formData,
                                     name: '',
                                     questionIds: '',
-                                    description: ''
+                                    description: '',
                                 });
                                 setLogs([]);
                             }}

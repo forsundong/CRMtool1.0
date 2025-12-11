@@ -19,7 +19,7 @@ export default function App() {
     
     // User provided defaults
     // Note: Removed "Bearer " prefix to match screenshot API requirements for TMS
-    const defaultToken = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJvbGRfc3RhZmZfdW5pZmllZF9hdXRoX3Rva2VuOndlYjpzdW5kb25nIiwiY3JlYXRlZCI6MTc2NTM1MjkzNDkxOSwibmlja25hbWUiOiLlrZnkuJzogIHluIgiLCJpZCI6MzAwMDg4MTksImV4cCI6MTc2NTQzOTMzNCwic3RhZmZJZCI6Mzk0MjEsInVzZXJuYW1lIjoic3VuZG9uZyJ9.5YJpiv5aufQhTehgwmLFuQDTqkuFCwAAAmwOXe2m3-NpHAel8llhpuAWaCSw9ZYJ7RtVQLvY-ZfeLOTcnELxrQ";
+    const defaultToken = "";
     const defaultOperatorId = 30008819;
 
     if (saved) {

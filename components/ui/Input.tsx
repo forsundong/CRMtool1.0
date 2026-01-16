@@ -3,12 +3,17 @@ import React from 'react';
 interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label: string;
   error?: string;
+  // Added helperText to support descriptive text below the input
+  helperText?: string;
+  // Added icon to support rendering an icon next to the label
+  icon?: React.ReactNode;
 }
 
-export const Input: React.FC<InputProps> = ({ label, error, className = '', ...props }) => {
+export const Input: React.FC<InputProps> = ({ label, error, helperText, icon, className = '', ...props }) => {
   return (
     <div className="flex flex-col gap-1.5">
-      <label className="text-sm font-medium text-slate-700">
+      <label className="text-sm font-medium text-slate-700 flex items-center gap-1.5">
+        {icon}
         {label}
         {props.required && <span className="text-red-500 ml-1">*</span>}
       </label>
@@ -18,6 +23,8 @@ export const Input: React.FC<InputProps> = ({ label, error, className = '', ...p
         disabled:bg-slate-50 disabled:text-slate-500 disabled:border-slate-200 ${error ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : ''} ${className}`}
         {...props}
       />
+      {/* Render helper text if no error is present */}
+      {helperText && !error && <p className="text-xs text-slate-500">{helperText}</p>}
       {error && <p className="text-xs text-red-600">{error}</p>}
     </div>
   );

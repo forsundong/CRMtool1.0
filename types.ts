@@ -230,7 +230,7 @@ export interface TemplateTreeItemDTO {
 
 export interface UpdateTreePayload {
   id: number; // Template ID
-  unitCombinationDataSavedDTOList: TemplateTreeItemDTO[];
+  unitCombinationDataSaveDTOList: TemplateTreeItemDTO[];
 }
 
 export interface UpdateTreeResponse {
@@ -309,6 +309,7 @@ export interface UpdateUnitPayload {
 export interface GlobalConfig {
   authToken: string;
   operatorId: number; // Used for both operatorId and counselorId based on screenshot logic
+  subjectId: number; // Subject ID: 14 for Math, 13 for English
   jenkinsCrumb?: string; // Added for Course Updater
 }
 

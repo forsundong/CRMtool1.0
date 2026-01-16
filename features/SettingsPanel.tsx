@@ -49,6 +49,22 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({ config, setConfig 
             <p className="text-xs text-slate-500 mt-1">请粘贴浏览器 Network 面板中 Request Headers 下的完整 Authorization 字段值。</p>
           </div>
 
+          <div>
+            <label className="text-sm font-medium text-slate-700 mb-1.5 block">
+              学科 (Subject)
+            </label>
+            <select
+              className="w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-sm shadow-sm focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500"
+              value={formData.subjectId}
+              onChange={(e) => setFormData({ ...formData, subjectId: parseInt(e.target.value) })}
+              required
+            >
+              <option value={14}>数学 (Math)</option>
+              <option value={13}>英语 (English)</option>
+            </select>
+            <p className="text-xs text-slate-500 mt-1">选择的学科将应用于所有功能页面</p>
+          </div>
+
           <Input
             label="操作人 ID / 班主任 ID (Counselor ID)"
             type="number"

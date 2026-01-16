@@ -1,8 +1,8 @@
 
 
-import { 
-  CreateClassPayload, 
-  CreateClassResponse, 
+import {
+  CreateClassPayload,
+  CreateClassResponse,
   GlobalConfig,
   GetCoursePlanResponse,
   UnlockUnitPayload,
@@ -34,11 +34,11 @@ const TMS_TEMPLATE_BASE_URL = 'https://tms-mx.xueqiulearning.com/math-template';
 
 // Helper to format Auth token based on input
 const getAuthHeader = (token: string) => {
-    if (!token) return '';
-    const cleanToken = token.trim();
-    if (cleanToken.startsWith('Bearer ')) return cleanToken;
-    if (cleanToken.startsWith('ey')) return cleanToken;
-    return `Bearer ${cleanToken}`;
+  if (!token) return '';
+  const cleanToken = token.trim();
+  if (cleanToken.startsWith('Bearer ')) return cleanToken;
+  if (cleanToken.startsWith('ey')) return cleanToken;
+  return `Bearer ${cleanToken}`;
 };
 
 // TMS Header Helper: Centralize headers for TMS requests to ensure consistency
@@ -225,7 +225,7 @@ export const CrmService = {
    */
   getTemplatePage: async (templateId: string, config: GlobalConfig): Promise<TemplatePageResponse> => {
     try {
-      const url = `${TMS_TEMPLATE_BASE_URL}/unitTemplate/page?pageNo=1&pageSize=10&subjectId=14&auditStateList=2&templateId=${templateId}`;
+      const url = `${TMS_TEMPLATE_BASE_URL}/unitTemplate/page?pageNo=1&pageSize=10&subjectId=${config.subjectId}&auditStateList=2&templateId=${templateId}`;
       const response = await fetch(url, {
         method: 'GET',
         headers: {
@@ -250,7 +250,7 @@ export const CrmService = {
    */
   getTemplateTree: async (templateId: string, config: GlobalConfig): Promise<TemplateTreeResponse> => {
     try {
-      const url = `${TMS_TEMPLATE_BASE_URL}/unitCombinationData/tree?id=${templateId}&subjectId=14`;
+      const url = `${TMS_TEMPLATE_BASE_URL}/unitCombinationData/tree?id=${templateId}&subjectId=${config.subjectId}`;
       const response = await fetch(url, {
         method: 'GET',
         headers: {
@@ -299,7 +299,7 @@ export const CrmService = {
   searchTemplateUnit: async (unitId: string | number, config: GlobalConfig): Promise<any> => {
     try {
       const cleanId = unitId.toString().trim();
-      const url = `${TMS_TEMPLATE_BASE_URL}/unit/list?subjectId=14&unitId=${cleanId}`;
+      const url = `${TMS_TEMPLATE_BASE_URL}/unit/list?subjectId=${config.subjectId}&unitId=${cleanId}`;
       const response = await fetch(url, {
         method: 'GET',
         headers: getTmsHeaders(config, false),
@@ -415,7 +415,7 @@ export const CrmService = {
   getUnitPage: async (unitId: string | number, config: GlobalConfig): Promise<UnitPageResponse> => {
     try {
       const cleanId = unitId.toString().trim();
-      const url = `${TMS_BASE_URL}/teaching/unit/page?subjectId=14&syllabus=14-1&level=1&unitId=${cleanId}&pageNum=1&pageSize=20`;
+      const url = `${TMS_BASE_URL}/teaching/unit/page?subjectId=${config.subjectId}&syllabus=${config.subjectId}-1&level=1&unitId=${cleanId}&pageNum=1&pageSize=20`;
       const response = await fetch(url, {
         method: 'GET',
         headers: getTmsHeaders(config, false),
@@ -537,7 +537,7 @@ export const CrmService = {
         headers: getTmsHeaders(config, true),
         body: JSON.stringify({
           id,
-          description: "1" 
+          description: "1"
         }),
         ...tmsFetchOptions
       });

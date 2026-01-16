@@ -12,23 +12,25 @@ import { GlobalConfig } from './types';
 
 export default function App() {
   const [currentTab, setCurrentTab] = useState('create-class');
-  
+
   // Load config from localStorage or use defaults
   const [config, setConfig] = useState<GlobalConfig>(() => {
     const saved = localStorage.getItem('crmToolboxConfig');
-    
+
     // User provided defaults
     // Note: Removed "Bearer " prefix to match screenshot API requirements for TMS
     const defaultToken = "";
     const defaultOperatorId = 30008819;
+    const defaultSubjectId = 14; // Math
 
     if (saved) {
       return JSON.parse(saved);
     } else {
       // Pre-fill with user provided credentials if no local config exists
-      return { 
-        authToken: defaultToken, 
-        operatorId: defaultOperatorId 
+      return {
+        authToken: defaultToken,
+        operatorId: defaultOperatorId,
+        subjectId: defaultSubjectId
       };
     }
   });
@@ -42,7 +44,7 @@ export default function App() {
   return (
     <div className="flex min-h-screen bg-slate-50">
       <Sidebar currentTab={currentTab} setCurrentTab={setCurrentTab} />
-      
+
       <main className="ml-64 flex-1 p-8">
         <div className="max-w-6xl mx-auto">
           {currentTab === 'create-class' && (
@@ -72,7 +74,7 @@ export default function App() {
           {currentTab === 'fast-join' && (
             <FastJoin config={config} />
           )}
-          
+
           {currentTab === 'settings' && (
             <SettingsPanel config={config} setConfig={handleConfigChange} />
           )}
